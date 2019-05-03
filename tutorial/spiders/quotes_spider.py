@@ -33,7 +33,7 @@ class QuotesSpider(scrapy.Spider):
             item['tags'] = tags
             yield item
 
-
+        # 递归翻页
         next = response.css('.pager .next a::attr(href)').extract_first()
         url = response.urljoin(next)
         yield scrapy.Request(url=url, callback=self.parse)
