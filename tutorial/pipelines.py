@@ -15,34 +15,33 @@ class TutorialPipeline(object):
 
 
     def process_item(self, item, spider):
-
         # 限制text长度在30以内
         if item['text']:
             if len(item['text']) > self.limit:
-                item['text'] = item['text'][0:self.limit].rsting() + '...'
+                item['text'] = item['text'][0:self.limit].rstrip() + '...'
             return item
         else:
             return DropItem("Missing Text")
 
 
-class MongonPipeline(object):
+class MongoPipeline(object):
     """
     将数据存入mongodb
     """
 
-    def __init__(self, mongo_url, mongo_db):
-        self.mongo_url = mongo_url
+    def __init__(self, mongo_uri, mongo_db):
+        self.mongo_uri = mongo_uri
         self.mongo_db = mongo_db
 
     @classmethod
-    def from_crawl(cls, crawler):
+    def from_crawler(cls, crawler):
         return cls(
-            mongo_url=crawler.settings.get('MONGO_URL'),
+            mongo_uri=crawler.settings.get('MONGO_URI'),
             mongo_db=crawler.settings.get('MONGO_DB')
         )
 
     def open_spider(self, spider):
-        self.client = pymongo.MongoClient(self.mongo_url)
+        self.client = pymongo.MongoClient(self.mongo_uri)
         self.db = self.client[self.mongo_db]
 
     def process_item(self, item, spider):
